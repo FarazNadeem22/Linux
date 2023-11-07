@@ -1,0 +1,60 @@
+sudo apt update
+sudo apt upgrade
+sudo apt install chrony
+sudo systemctl status chronyd
+sudo systemctl start chronyd
+sudo systemctl enable chronyd
+
+
+To install the Chrony daemon on your Ubuntu server, you can use the apt package manager, which is the default package manager for Ubuntu. Follow these steps:
+
+Open a terminal on your Ubuntu server. You can do this by connecting to your server via SSH or by accessing it directly if you have physical access.
+
+Update the package list to ensure you have the latest information about available packages and upgrade any existing packages to their latest versions by running the following commands:
+
+
+
+sudo apt update
+sudo apt upgrade
+
+Install the Chrony package by running the following command:
+
+sudo apt install chrony
+
+After the installation is complete, the Chrony service should start automatically. You can check its status with the 
+
+following command:
+
+
+sudo systemctl status chronyd
+
+You should see output indicating that Chrony is active and running. If it's not running, you can start it with:
+
+
+
+sudo systemctl start chronyd
+Optionally, you can enable Chrony to start automatically at boot time by running:
+
+
+sudo systemctl enable chronyd
+To configure Chrony, you can edit its configuration file located at /etc/chrony/chrony.conf using a text editor like Nano or Vim. For example, to edit the configuration with Nano, you can run:
+
+
+sudo nano /etc/chrony/chrony.conf
+Make any necessary configuration changes, such as specifying NTP servers, allowing access to the NTP service, or configuring logging options. Here's an example of adding NTP servers:
+
+server ntp.example.com iburst
+server ntp2.example.com iburst
+Save your changes and exit the text editor.
+
+Restart the Chrony service to apply the configuration changes:
+
+
+
+sudo systemctl restart chronyd
+Chrony should now be installed and configured on your Ubuntu server, providing accurate time synchronization. You can also check the Chrony status with the chronyc tracking command to verify that it's synchronizing with the configured NTP servers:
+
+
+
+chronyc tracking
+That's it! You have successfully installed and configured the Chrony daemon on your Ubuntu server.

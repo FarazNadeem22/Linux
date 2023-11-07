@@ -1,0 +1,113 @@
+Mountaing 2 TB HDD on pizza:
+----------------------------
+	fuzz@pizza:~$ lsblk
+	NAME                      MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+	loop0                       7:0    0    15M  1 loop /snap/aws-cli/130
+	........
+	loop57                      7:57   0 496.9M  1 loop /snap/gnome-42-2204/132
+	loop58                      7:58   0   341M  1 loop /snap/google-cloud-sdk/384
+	sda                         8:0    0   1.8T  0 disk
+	├─sda1                      8:1    0     1M  0 part
+	├─sda2                      8:2    0     2G  0 part /boot
+	└─sda3                      8:3    0   1.8T  0 part
+	  └─ubuntu--vg-ubuntu--lv 253:0    0   100G  0 lvm  /var/snap/firefox/common/host-hunspell
+														/
+	sr0                        11:0    1  1024M  0 rom
+	fuzz@pizza:~$
+	
+	Notes:
+		sda: This is the name of the disk device. It represents your hard drive. In this case, it's named /dev/sda.
+
+		8:0: These numbers are the major and minor numbers associated with the device. The major number (8) corresponds to the type of device (SCSI or SATA), and the minor number (0) identifies the specific device within that type.
+
+		1.8T: This is the total size of the hard drive, which is approximately 1.8 terabytes.
+
+		0 disk: This indicates that sda is a physical disk (not a partition).
+
+		sda1, sda2, sda3: These are the individual partitions on the hard drive.
+
+		sda1: This is a small 1MB partition.
+		sda2: This is a 2GB partition mounted as /boot.
+		sda3: This is the main partition on the hard drive, which is approximately 1.8 terabytes in size.
+		ubuntu--vg-ubuntu--lv: This is an LVM (Logical Volume Manager) logical volume. It's a logical partition created within an LVM volume group (ubuntu-vg) and a logical volume (ubuntu-lv) with a size of 100GB.
+
+		253:0: Similar to the major and minor numbers for the disk, these numbers represent the LVM logical volume.
+
+		lvm: Indicates that this is an LVM logical volume.
+
+		/var/snap/firefox/common/host-hunspell and /: These are mount points for the logical volume. It shows that this logical volume is mounted at these two locations in your file system.
+
+		In summary, this output provides information about your hard drive (sda) and its partitions, including their sizes, types, and mount points. It also indicates the presence of an LVM logical volume (ubuntu--vg-ubuntu--lv) and where it's mounted in your file system.	
+	
+	How do check to see if sda3 is mounted?
+	----------------------------------------
+	fuzz@pizza:~$ mount | grep '/dev/sda3'
+	fuzz@pizza:~$
+		Notes:
+		------
+		If sda3 is mounted, this command will display the mount point (e.g., /mnt/sda3) where it is mounted. If there is no output, it means the partition is not currently mounted.
+		So, this is not mounted
+
+	fuzz@pizza:~$ cat /etc/mtab | grep '/dev/sda3'
+	fuzz@pizza:~$
+		Notes:
+		------
+		If sda3 is mounted, this command will display its mount point. If there's no output, it's not mounted.
+		So, this is not mounted
+		
+	How to mount sda3:
+	------------------
+		1. Activate the Volume Group:
+		-----------------------------
+		fuzz@pizza:~$ sudo vgs
+			VG        #PV #LV #SN Attr   VSize  VFree
+			ubuntu-vg   1   1   0 wz--n- <1.82t <1.72t
+		fuzz@pizza:~$ sudo vgchange -ay ubuntu-vg
+		  1 logical volume(s) in volume group "ubuntu-vg" now active
+		fuzz@pizza:~$
+		
+		2. List Logical Volumes:
+		-------------------------
+		fuzz@pizza:~$ sudo lvdisplay
+		  --- Logical volume ---
+		  LV Path                /dev/ubuntu-vg/ubuntu-lv
+		  LV Name                ubuntu-lv
+		  VG Name                ubuntu-vg
+		  LV UUID                3V6Rpu-NQQd-P93Q-9wSh-fQX7-qanL-pXcDfA
+		  LV Write Access        read/write
+		  LV Creation host, time ubuntu-server, 2023-03-06 23:40:47 +0000
+		  LV Status              available
+		  # open                 1
+		  LV Size                100.00 GiB
+		  Current LE             25600
+		  Segments               1
+		  Allocation             inherit
+		  Read ahead sectors     auto
+		  - currently set to     256
+		  Block device           253:0
+		  
+			  Notes:
+			  ------
+			  It looks like you have a logical volume named "ubuntu-lv" within the "ubuntu-vg" volume group, and it has a size of 100.00 GiB.
+		
+		3. Create a Mount Point:
+		------------------------
+		fuzz@pizza:~$ sudo mkdir /mnt/ubuntu-lv
+		
+		4. Mount the Logical Volume:
+		----------------------------
+		Mount the "ubuntu-lv" logical volume to the mount point you created:
+		fuzz@pizza:~$ sudo mount /dev/ubuntu-vg/ubuntu-lv /mnt/ubuntu-lv/
+		
+		5. Access the Mounted Data:
+		---------------------------
+		fuzz@pizza:~$ cd /mnt/ubuntu-lv
+		fuzz@pizza:/mnt/ubuntu-lv$ ls
+			bin   dev  home  lib32  libx32      media  opt   root  sbin  srv       sys  usr
+			boot  etc  lib   lib64  lost+found  mnt    proc  run   snap  swap.img  tmp  var
+		fuzz@pizza:/mnt/ubuntu-lv$
+
+		
+		6. Unmount drive(Optional):
+		----------------------------
+		sudo umount /mnt/ubuntu-lv

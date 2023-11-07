@@ -1,0 +1,226 @@
+Installing Apache Server on Pizza:
+-----------------------------------
+	
+	To install the Apache web server and have it serve content from your mounted drive on Ubuntu, you can follow these steps:
+
+	Install Apache:
+
+	First, ensure that Apache is installed on your system as described in the previous response. If you haven't already installed Apache, you can do so with the following command:
+
+	bash
+	Copy code
+	sudo apt update
+	sudo apt install apache2
+	Create a Directory for Your Web Content:
+
+	You'll need to create a directory within your mounted drive to store your web content. Replace /mnt/ubuntu-lv with the actual path to your mounted drive.
+
+	bash
+	Copy code
+	sudo mkdir /mnt/ubuntu-lv/web
+	Change Ownership of the Web Directory (Optional):
+
+	By default, the Apache web server runs as the user www-data. To allow Apache to read files from your web directory, you may need to change the ownership of the directory to www-data. Replace /mnt/ubuntu-lv/web with the actual path to your web directory:
+
+	bash
+	Copy code
+	sudo chown -R www-data:www-data /mnt/ubuntu-lv/web
+	Create a Test HTML File:
+
+	Create a simple HTML file to test if Apache can serve content from your mounted drive. You can use any text editor to create this file. For example:
+
+	bash
+	Copy code
+	echo "Hello from my mounted drive!" | sudo tee /mnt/ubuntu-lv/web/index.html
+	Configure Apache:
+
+	Create a new Apache configuration file for your website. You can create a new configuration file under the /etc/apache2/sites-available/ directory, or you can modify the default configuration file.
+
+	For example, to create a new configuration file:
+
+	bash
+	Copy code
+	sudo nano /etc/apache2/sites-available/my-website.conf
+	Add the following content to the configuration file, replacing /mnt/ubuntu-lv/web with the actual path to your web directory:
+
+	apache
+	Copy code
+	<VirtualHost *:80>
+		ServerAdmin webmaster@my-website.com
+		DocumentRoot /mnt/ubuntu-lv/web
+		ServerName my-website.com
+		ErrorLog ${APACHE_LOG_DIR}/error.log
+		CustomLog ${APACHE_LOG_DIR}/access.log combined
+	</VirtualHost>
+	Save and exit the text editor.
+
+	Enable the Website:
+
+	Enable your website configuration and reload Apache to apply the changes:
+
+	bash
+	Copy code
+	sudo a2ensite my-website.conf
+	sudo systemctl reload apache2
+	Access Your Website:
+
+	Open a web browser and enter your server's IP address or hostname in the address bar. If you're testing on the local machine, you can use http://localhost or http://127.0.0.1. You should see the content from your mounted drive displayed in the browser.
+
+	That's it! You have successfully installed Apache and configured it to serve content from your mounted drive on Ubuntu. You can now add your web files to the /mnt/ubuntu-lv/web directory and access them via your web server.
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	======================= My Notes =======================
+	sudo apt update
+	sudo apt install apache2
+	sudo mkdir /mnt/ubuntu-lv/web
+	sudo chown -R www-data:www-data /mnt/ubuntu-lv/web
+	echo "Hello from my mounted drive!" | sudo tee /mnt/ubuntu-lv/web/index.html
+	sudo vi /etc/apache2/sites-available/my-website.conf
+		add:
+			<VirtualHost *:80>
+			ServerAdmin webmaster@my-website.com
+			DocumentRoot /mnt/ubuntu-lv/web
+			ServerName my-website.com
+			ErrorLog ${APACHE_LOG_DIR}/error.log
+			CustomLog ${APACHE_LOG_DIR}/access.log combined
+			</VirtualHost>
+	sudo a2ensite my-website.conf
+	sudo systemctl reload apache2
+	sudo systemctl status apache2
+	sudo systemctl start apache2
+	sudo systemctl enable apache2   [Enable Apache to Start on Boot (Optional)]
+
+	Notes:
+	-------
+	If you are testing on a local machine, you can use http://localhost or http://127.0.0.1 as the address.
+	
+	
+	[sudo apt update]
+	------------------
+	fuzz@pizza:~$ sudo apt update
+		Hit:1 http://us.archive.ubuntu.com/ubuntu jammy InRelease
+		Hit:2 http://us.archive.ubuntu.com/ubuntu jammy-updates InRelease
+		Hit:3 http://us.archive.ubuntu.com/ubuntu jammy-backports InRelease
+		Hit:4 http://us.archive.ubuntu.com/ubuntu jammy-security InRelease
+		Reading package lists... Done
+		Building dependency tree... Done
+		Reading state information... Done
+		All packages are up to date.
+	fuzz@pizza:~$
+	
+	[sudo apt install apache2]
+	fuzz@pizza:~$ sudo apt install apache2
+	Unpacking apache2-data (2.4.52-1ubuntu4.6) ...
+	Selecting previously unselected package apache2-utils.
+	Preparing to unpack .../6-apache2-utils_2.4.52-1ubuntu4.6_amd64.deb ...
+	Unpacking apache2-utils (2.4.52-1ubuntu4.6) ...
+	Selecting previously unselected package apache2.
+	Preparing to unpack .../7-apache2_2.4.52-1ubuntu4.6_amd64.deb ...
+	Unpacking apache2 (2.4.52-1ubuntu4.6) ...
+	Setting up libapr1:amd64 (1.7.0-8ubuntu0.22.04.1) ...
+	Setting up apache2-data (2.4.52-1ubuntu4.6) ...
+	Setting up libaprutil1:amd64 (1.6.1-5ubuntu4.22.04.2) ...
+	Setting up libaprutil1-ldap:amd64 (1.6.1-5ubuntu4.22.04.2) ...
+	Setting up libaprutil1-dbd-sqlite3:amd64 (1.6.1-5ubuntu4.22.04.2) ...
+	Setting up apache2-utils (2.4.52-1ubuntu4.6) ...
+	Setting up apache2-bin (2.4.52-1ubuntu4.6) ...
+	Setting up apache2 (2.4.52-1ubuntu4.6) ...
+	Enabling module mpm_event.
+	Enabling module authz_core.
+	Enabling module authz_host.
+	Enabling module authn_core.
+	Enabling module auth_basic.
+	Enabling module access_compat.
+	Enabling module authn_file.
+	Enabling module authz_user.
+	Enabling module alias.
+	Enabling module dir.
+	Enabling module autoindex.
+	Enabling module env.
+	Enabling module mime.
+	Enabling module negotiation.
+	Enabling module setenvif.
+	Enabling module filter.
+	Enabling module deflate.
+	Enabling module status.
+	Enabling module reqtimeout.
+	Enabling conf charset.
+	Enabling conf localized-error-pages.
+	Enabling conf other-vhosts-access-log.
+	Enabling conf security.
+	Enabling conf serve-cgi-bin.
+	Enabling site 000-default.
+	Created symlink /etc/systemd/system/multi-user.target.wants/apache2.service → /lib/systemd/system/apache2.service.
+	Could not execute systemctl:  at /usr/bin/deb-systemd-invoke line 142.
+	Created symlink /etc/systemd/system/multi-user.target.wants/apache-htcacheclean.service → /lib/systemd/system/apache-htcacheclean.service.
+	Processing triggers for ufw (0.36.1-4ubuntu0.1) ...
+	Processing triggers for man-db (2.10.2-1) ...
+	Processing triggers for libc-bin (2.35-0ubuntu3.3) ...
+	Scanning processes...
+	Scanning processor microcode...
+	Scanning linux images...
+
+	Running kernel seems to be up-to-date.
+
+	The processor microcode seems to be up-to-date.
+
+	No services need to be restarted.
+
+	No containers need to be restarted.
+
+	No user sessions are running outdated binaries.
+
+	No VM guests ar
+		
+	fuzz@pizza:~$ sudo mkdir /mnt/ubuntu-lv/web
+	fuzz@pizza:~$ sudo chown -R www-data:www-data /mnt/ubuntu-lv/web
+	fuzz@pizza:~$ echo "Hello from my mounted drive!" | sudo tee /mnt/ubuntu-lv/web/index.html
+	Hello from my mounted drive!
+	fuzz@pizza:~$ sudo vi /etc/apache2/sites-available/my-website.conf
+	fuzz@pizza:~$ sudo a2ensite my-website.conf
+	Enabling site my-website.
+	To activate the new configuration, you need to run:
+	  systemctl reload apache2
+	fuzz@pizza:~$ sudo systemctl reload apache2
+	apache2.service is not active, cannot reload.
+	fuzz@pizza:~$ sudo systemctl status apache2
+	× apache2.service - The Apache HTTP Server
+		 Loaded: loaded (/lib/systemd/system/apache2.service; enabled; vendor preset: enabled)
+		 Active: failed (Result: exit-code) since Sun 2023-09-24 01:38:56 UTC; 4min 21s ago
+		   Docs: https://httpd.apache.org/docs/2.4/
+			CPU: 45ms
+
+	Sep 24 01:38:56 pizza apachectl[1756563]: (98)Address already in use: AH00072: make_sock: could not b>
+	Sep 24 01:38:56 pizza apachectl[1756563]: (98)Address already in use: AH00072: make_sock: could not b>
+	Sep 24 01:38:56 pizza apachectl[1756563]: no listening sockets available, shutting down
+	Sep 24 01:38:56 pizza apachectl[1756563]: AH00015: Unable to open logs
+	Sep 24 01:38:56 pizza apachectl[1756542]: Action 'start' failed.
+	Sep 24 01:38:56 pizza apachectl[1756542]: The Apache error log may have more information.
+	Sep 24 01:38:56 pizza systemd[1]: apache2.service: Control process exited, code=exited, status=1/FAIL>
+	Sep 24 01:38:56 pizza systemd[1]: apache2.service: Failed with result 'exit-code'.
+	Sep 24 01:38:56 pizza systemd[1]: Failed to start The Apache HTTP Server.
+	Sep 24 01:42:57 pizza systemd[1]: apache2.service: Unit cannot be reloaded because it is inactive.
+	fuzz@pizza:~$ sudo systemctl start apache2
+	Job for apache2.service failed because the control process exited with error code.
+	See "systemctl status apache2.service" and "journalctl -xeu apache2.service" for details.
+	fuzz@pizza:~$
+	
+	
+	fuzz@pizza:~$ sudo netstat -tuln | grep 80
+		tcp        0      0 127.0.0.1:8080          0.0.0.0:*               LISTEN
+		tcp6       0      0 :::80                   :::*                    LISTEN
+		fuzz@pizza:~$
+		
+		
+		date "Its %A the %c of %B in the year %Y"
+		
+		
+	
